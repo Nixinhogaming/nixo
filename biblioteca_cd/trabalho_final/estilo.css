@@ -1,0 +1,1256 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:wght@400;700&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f4f1ea; /* Um bege claro, como papel antigo */
+    color: #3a3a3a;
+    display: flex;
+    /* justify-content: center; /* Removido para permitir que o conteúdo flua normalmente */
+    /* align-items: center; /* Removido para permitir que o conteúdo flua normalmente */
+    flex-direction: column; /* Mantém a navbar no topo e o conteúdo abaixo */
+    min-height: 100vh;
+    margin: 0;
+    /* padding: 20px; /* Removido padding do body para que a navbar ocupe 100% da largura */
+    box-sizing: border-box;
+    background-image: url('https://www.transparenttextures.com/patterns/lined-paper.png');
+    background-attachment: fixed;
+    padding-top: 0; /* Navbar cuidará do seu próprio padding */
+}
+
+/* Estilos da Navbar e Dropdown */
+.navbar {
+    width: 100%;
+    background-color: #4a3b32;
+    padding: 12px 25px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #f0e8d9;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.navbar-brand {
+    font-family: 'Lora', serif;
+    font-size: 1.9em;
+    font-weight: bold;
+    color: #f0e8d9;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+.navbar-brand:hover {
+    color: #c0b2a1;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+}
+
+.navbar-links a, .dropdown-toggle {
+    font-family: 'Montserrat', sans-serif;
+    color: #f0e8d9;
+    text-decoration: none;
+    font-size: 1.05em;
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: background-color 0.25s ease-out, color 0.25s ease-out;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-links a:hover,
+.navbar-links a.active,
+.dropdown-toggle:hover,
+.dropdown-categorias:hover .dropdown-toggle {
+    background-color: #6b5b4c;
+    color: #ffffff;
+}
+
+.dropdown-categorias {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+.dropdown-toggle::after {
+    content: ' ▼';
+    font-size: 0.65em;
+    margin-left: 6px;
+    transition: transform 0.2s ease-in-out;
+}
+.dropdown-categorias:hover .dropdown-toggle::after {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 220px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    z-index: 1001;
+    border-radius: 8px;
+    border: 1px solid #d2c8b6;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 0;
+    list-style-type: none;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform-origin: top center;
+    animation: fadeInDropdown 0.2s ease-out forwards;
+}
+
+@keyframes fadeInDropdown {
+    from {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.dropdown-categorias:hover .dropdown-menu,
+.dropdown-categorias .dropdown-toggle:focus + .dropdown-menu,
+.dropdown-categorias .dropdown-menu:hover {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    animation: fadeInDropdown 0.2s ease-out forwards;
+}
+
+.dropdown-menu {
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.dropdown-menu a {
+    color: #4a3b32;
+    padding: 12px 22px;
+    text-decoration: none;
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95em;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.dropdown-menu a:hover {
+    background-color: #f0e8d9;
+    color: #4a3b32;
+}
+
+.navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.navbar-user span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em;
+    color: #f0e8d9;
+}
+.navbar-user span.admin-indicator {
+    font-size: 0.75em;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+/* Estilos para a barra de pesquisa em livros_biblioteca.php (anteriormente .barra-pesquisa-simples) */
+.barra-pesquisa-staff {
+    display: flex; /* Alinha input e botão na mesma linha */
+    justify-content: center; /* Centraliza a barra de pesquisa dentro do seu container */
+    margin-bottom: 20px; /* Espaçamento abaixo da barra */
+}
+
+.barra-pesquisa-staff input[type="text"] {
+    width: 100%;
+    max-width: 550px; /* Aumentado para melhor estética */
+    padding: 12px 20px;
+    border: 1px solid #d2c8b6; /* Borda mais suave, combinando com outros elementos */
+    border-right: none; /* Remove a borda direita para conectar com o botão */
+    border-radius: 25px 0 0 25px;
+    font-size: 1.05em;
+    background-color: #fff; /* Fundo branco para destaque */
+    color: #4a3b32;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.barra-pesquisa-staff input[type="text"]:focus {
+    border-color: #8c7b6a;
+    box-shadow: 0 0 0 3px rgba(140, 123, 106, 0.2); /* Sombra de foco mais sutil */
+    z-index: 2; /* Para que a sombra de foco fique por cima do botão */
+    position: relative; /* Necessário para z-index funcionar corretamente com o botão */
+}
+
+.barra-pesquisa-staff button {
+    padding: 12px 28px;
+    border: 1px solid #6b5b4c; /* Adiciona borda para consistência */
+    border-left: none; /* Remove borda esquerda para conectar ao input */
+    border-radius: 0 25px 25px 0;
+    background: #6b5b4c;
+    color: #ffffff;
+    font-size: 1.05em;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.barra-pesquisa-staff button:hover {
+    background: #5a4a3b;
+    border-color: #5a4a3b;
+}
+/* Estilos para a página de escolha criar_livro.php */
+.escolha-criacao-container {
+    display: flex;
+    justify-content: space-around; /* Ou space-evenly para mais espaço */
+    gap: 20px;
+    flex-wrap: wrap; /* Para telas menores */
+    margin-top: 20px; /* Espaço acima dos botões */
+    margin-bottom: 20px; /* Espaço abaixo dos botões */
+}
+.btn-escolha-criacao { /* Aplicar esta classe aos <a> em criar_livro.php */
+    flex-basis: 45%; /* Tenta fazer com que ocupem quase metade cada */
+    min-width: 280px; /* Largura mínima para não ficarem muito espremidos */
+    padding: 20px 25px !important; /* Padding maior para botões mais destacados, !important para garantir */
+    font-size: 1.2em !important;  /* Fonte maior */
+    line-height: 1.4 !important;  /* Melhorar espaçamento de linha se houver subtexto */
+    text-align: center;
+    display: flex !important; /* Para alinhar texto e subtexto verticalmente */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px; /* Altura mínima para consistência */
+    text-decoration: none !important; /* Garantir que não haja sublinhado */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important; /* Sombra mais pronunciada */
+}
+.btn-escolha-criacao:hover {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2) !important;
+    transform: translateY(-2px) !important;
+}
+.btn-escolha-criacao small {
+    font-size: 0.8em;
+    font-weight: normal;
+    /* A cor do subtexto será herdada ou pode ser definida aqui se necessário */
+    /* color: rgba(255, 255, 255, 0.85); */ /* Exemplo se o botão for escuro */
+    color: inherit; /* Herda a cor do texto do botão */
+    margin-top: 5px;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+
+/* Estilos para Destaques em main.php */
+.book-card .resumo-destaque-container {
+    margin-top: 10px;
+    text-align: left; /* Para o resumo não ficar centralizado se o card for centralizado */
+}
+.book-card .btn-toggle-resumo {
+    margin-top: 8px;
+    margin-bottom: 5px;
+    /* Outros estilos de btn-small já devem ser aplicados */
+}
+.admin-controls-destaque .btn { /* Para espaçar os botões de admin nos destaques */
+    margin-right: 5px;
+}
+.admin-controls-destaque .btn:last-child {
+    margin-right: 0;
+}
+
+
+/* Ajuste para .livros-grid-encantado em livros_biblioteca.php para 2 colunas */
+.livros-grid-encantado { /* Usado em livros_biblioteca.php */
+    display: grid;
+    gap: 30px;
+    grid-template-columns: 1fr; /* Default para 1 coluna em telas pequenas */
+}
+
+@media (min-width: 700px) { /* A partir de 700px, tentar 2 colunas */
+    .livros-grid-encantado {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+/* Em telas muito largas, ele vai manter 2 colunas por causa da regra acima.
+   Se quisesse mais colunas em telas > 1200px, adicionaria outro @media query.
+   Para forçar estritamente 2 colunas e não mais, mesmo em telas muito largas,
+   a abordagem acima já funciona bem se os cards tiverem um max-width razoável
+   ou se o container pai (.main-content-area) tiver um max-width.
+   Se os cards puderem encolher muito, pode ser necessário ajustar o minmax em .book-card,
+   mas para o pedido de "2 lado a lado", a query de 768px é um bom ponto de partida.
+   Ajustei para 700px para dar um pouco mais de espaço para cada card.
+*/
+/* Fim do ajuste para .livros-grid-encantado */
+
+
+/* Estilos para Editor de Páginas (editor_paginas_livro.php) */
+.editor-paginas-container { /* Similar a .main-content-area mas pode ter especificidades */
+    max-width: 950px; /* Um pouco mais largo para acomodar a moldura */
+    margin: 30px auto; /* Adiciona margem superior/inferior */
+    padding: 20px;
+}
+
+.editor-paginas-frame {
+    border: 15px solid #7a6a56; /* Borda grossa como capa de livro */
+    background-color: #fdfaf6; /* Interior como páginas de livro antigo */
+    padding: 30px 40px; /* Padding interno da "página" */
+    min-height: 500px; /* Altura mínima para simular página */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 0 15px rgba(0,0,0,0.1); /* Sombra externa e interna */
+    position: relative;
+    border-radius: 5px 15px 15px 5px; /* Leve arredondamento para simular livro */
+}
+
+.editor-paginas-frame h2 {
+    font-size: 2em; /* Título um pouco menor para o editor */
+    color: #4a3b32;
+    margin-bottom: 25px;
+    text-align: left;
+    border-bottom: 2px solid #e0d8c7; /* Linha separadora abaixo do título */
+    padding-bottom: 10px;
+}
+.editor-paginas-frame h2::after { /* Remover fleron padrão se estiver herdando */
+    display: none;
+}
+
+.pagina-lista {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0d8c7;
+    display: flex; /* Para alinhar "Páginas Existentes:" e os links */
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px; /* Espaço entre links de página */
+}
+.pagina-lista strong {
+    font-family: 'Lora', serif;
+    color: #5a4a3b;
+    margin-right: 10px;
+    font-size: 1.05em;
+}
+.pagina-lista a {
+    font-family: 'Montserrat', sans-serif;
+    text-decoration: none;
+    color: #7a6a56;
+    background-color: #f0e8d9;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #d2c8b6;
+    margin-right: 5px; /* Mantido para caso o gap não seja suficiente em todas as situações */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    font-size: 0.9em;
+}
+.pagina-lista a:hover,
+.pagina-lista a.current-page { /* Adicionar .current-page para a página ativa (precisa de lógica PHP) */
+    background-color: #6b5b4c; /* Cor de destaque */
+    color: #f0e8d9;
+    border-color: #6b5b4c;
+}
+.pagina-lista a[href*="&nova=1"] { /* Estilo para o botão "+ Nova Página" */
+    color: #28a745;
+    border-color: #28a745;
+    background-color: #e8f5e9;
+    font-weight: bold;
+}
+.pagina-lista a[href*="&nova=1"]:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.pagina-editor-area { /* Área principal de edição da página */
+    border: 1px solid #d2c8b6;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #fdfbf7; /* Fundo muito sutil para a área de texto */
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+}
+.pagina-editor-area label {
+    display: block;
+    font-family: 'Lora', serif;
+    color: #6b5b4c;
+    margin-bottom: 10px; /* Mais espaço abaixo do label */
+    font-size: 1.15em;
+    font-weight: bold;
+}
+.pagina-editor-area textarea { /* Estilo para o textarea normal, o TinyMCE vai sobrescrever alguns destes */
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    background-color: #fff;
+    min-height: 250px;
+    resize: vertical;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+.pagina-editor-area input[type="file"] {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.95em;
+    padding: 5px;
+}
+.pagina-editor-area img.preview-pagina { /* Estilo para preview da imagem da página */
+    max-width: 180px;
+    max-height: 180px;
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    border: 2px solid #e0d8c7;
+    border-radius: 4px;
+    padding: 4px;
+    background-color: #fff;
+}
+
+.pagina-controls {
+    margin-top: 25px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.pagina-controls .btn {
+    padding: 10px 18px;
+}
+/* Fim dos estilos para Editor de Páginas */
+
+/* Link de Configurações na Navbar User */
+.navbar-config-link {
+    color: #f0e8d9;
+    text-decoration: none;
+    font-size: 1.3em; /* Tamanho do ícone de engrenagem */
+    padding: 5px 8px;
+    border-radius: 50%; /* Para um fundo circular se houver hover/active */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.navbar-config-link:hover,
+.navbar-config-link.active {
+    background-color: #6b5b4c;
+    color: #ffffff;
+    transform: rotate(360deg); /* Adiciona rotação no hover/active */
+}
+.navbar-config-link { /* Garantir que a transição seja suave */
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.5s ease-out;
+}
+
+
+/* Estilos para Editor de Páginas (editor_paginas_livro.php) */
+.editor-paginas-container { /* Similar a .main-content-area mas pode ter especificidades */
+    max-width: 900px; /* Um pouco mais estreito para formulários de edição */
+    margin-left: auto; /* Centralizar */
+    margin-right: auto; /* Centralizar */
+}
+
+.editor-paginas-frame { /* Similar a .form-frame mas pode ter padding/margin diferente se necessário */
+    padding: 25px 30px; /* Ajustar padding conforme o design */
+    background-color: #fff; /* Fundo branco para a área de edição */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.editor-paginas-frame h2 {
+    font-size: 1.9em; /* Título um pouco menor para o editor */
+    color: #4a3b32;
+    margin-bottom: 25px;
+    text-align: left;
+    border-bottom: 2px solid #e0d8c7; /* Linha separadora abaixo do título */
+    padding-bottom: 10px;
+}
+.editor-paginas-frame h2::after { /* Remover fleron padrão se estiver herdando */
+    display: none;
+}
+
+.pagina-lista {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0d8c7;
+    display: flex; /* Para alinhar "Páginas Existentes:" e os links */
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px; /* Espaço entre links de página */
+}
+.pagina-lista strong {
+    font-family: 'Lora', serif;
+    color: #5a4a3b;
+    margin-right: 10px;
+    font-size: 1.05em;
+}
+.pagina-lista a {
+    font-family: 'Montserrat', sans-serif;
+    text-decoration: none;
+    color: #7a6a56;
+    background-color: #f0e8d9;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #d2c8b6;
+    margin-right: 5px; /* Mantido para caso o gap não seja suficiente em todas as situações */
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    font-size: 0.9em;
+}
+.pagina-lista a:hover,
+.pagina-lista a.current-page { /* Adicionar .current-page para a página ativa (precisa de lógica PHP) */
+    background-color: #6b5b4c; /* Cor de destaque */
+    color: #f0e8d9;
+    border-color: #6b5b4c;
+}
+.pagina-lista a[href*="&nova=1"] { /* Estilo para o botão "+ Nova Página" */
+    color: #28a745;
+    border-color: #28a745;
+    background-color: #e8f5e9;
+    font-weight: bold;
+}
+.pagina-lista a[href*="&nova=1"]:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.pagina-editor-area { /* Área principal de edição da página */
+    border: 1px solid #d2c8b6;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #fdfbf7; /* Fundo muito sutil para a área de texto */
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.06);
+}
+.pagina-editor-area label {
+    display: block;
+    font-family: 'Lora', serif;
+    color: #6b5b4c;
+    margin-bottom: 10px; /* Mais espaço abaixo do label */
+    font-size: 1.15em;
+    font-weight: bold;
+}
+.pagina-editor-area textarea { /* Estilo para o textarea normal, o TinyMCE vai sobrescrever alguns destes */
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    background-color: #fff;
+    min-height: 250px;
+    resize: vertical;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+.pagina-editor-area input[type="file"] {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.95em;
+    padding: 5px;
+}
+.pagina-editor-area img.preview-pagina { /* Estilo para preview da imagem da página */
+    max-width: 180px;
+    max-height: 180px;
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    border: 2px solid #e0d8c7;
+    border-radius: 4px;
+    padding: 4px;
+    background-color: #fff;
+}
+
+.pagina-controls {
+    margin-top: 25px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.pagina-controls .btn {
+    padding: 10px 18px;
+}
+/* Fim dos estilos para Editor de Páginas */
+
+.navbar-user .logout-btn {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #8c7b6a;
+    color: white;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85em;
+    font-weight: bold;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.navbar-user .logout-btn:hover {
+    background-color: #a08f7c;
+    color: #4a3b32;
+}
+
+.main-content-area {
+    width: 100%;
+    max-width: 1200px;
+    padding: 25px;
+    margin: 0 auto; /* Centraliza e remove margem superior se a navbar for sticky */
+    flex-grow: 1;
+    box-sizing: border-box;
+}
+/* Fim dos Estilos da Navbar e Dropdown */
+
+
+/* Estilos Globais de Melhoria Estética */
+body {
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Lora', serif;
+    color: #3a2e26;
+}
+
+h1 { font-size: 2.6em; margin-bottom: 0.7em; margin-top: 0.5em; /* Ajuste para espaçamento pós-navbar */ }
+h2 { font-size: 2.1em; margin-bottom: 0.6em; margin-top: 1em; }
+h4 { font-size: 1.4em; margin-bottom: 0.5em; }
+
+
+.container { /* Usado em login/registo */
+    width: 100%;
+    max-width: 450px;
+    margin: 50px auto; /* Adiciona margem para centralizar na tela */
+}
+
+.form-frame { /* Usado em login/registo e criar/editar livro */
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 15px 50px 15px 50px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0,0,0,0.05);
+    border: 1px solid #d2c8b6;
+    position: relative;
+    overflow: hidden;
+}
+.form-admin-container .form-frame h2 { /* Título dentro de formulários admin */
+     text-align: left;
+     border-bottom: 2px solid #e0d8c7;
+     padding-bottom: 10px;
+     font-size: 1.9em;
+}
+.form-admin-container .form-frame h2::after {
+    display:none; /* Remove fleron de H2 em forms admin */
+}
+
+
+/* Efeito de "orelha de livro" ou marcador */
+.form-frame::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: 30px;
+    width: 0;
+    height: 0;
+    border-width: 0 0 30px 30px;
+    border-style: solid;
+    border-color: transparent transparent #e4d9c5 transparent;
+    transform: rotate(0deg);
+    z-index: 1;
+    opacity: 0.7;
+}
+.form-frame::after {
+    content: '';
+    position: absolute;
+    top: 18px;
+    right: 30px;
+    width: 30px;
+    height: 5px;
+    background: rgba(0,0,0,0.05);
+    transform: rotate(0deg);
+    z-index: 0;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-family: 'Lora', serif;
+    color: #6b5b4c;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.input-group input[type="text"],
+.input-group input[type="password"],
+.input-group input[type="number"],
+.input-group input[type="file"], /* Adicionado para consistência */
+.input-group select, /* Adicionado para consistência */
+.input-group textarea { /* Adicionado para consistência */
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+    background-color: #fdfaf6;
+    color: #3a3a3a;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-group textarea {
+    resize: vertical;
+    min-height: 100px; /* Altura mínima para textareas */
+}
+
+
+.input-group input[type="text"]:focus,
+.input-group input[type="password"]:focus,
+.input-group input[type="number"]:focus,
+.input-group input[type="file"]:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    border-color: #8c7b6a;
+    outline: none;
+    box-shadow: 0 0 8px rgba(140, 123, 106, 0.4);
+}
+
+.btn {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #7a6a56;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    /* width: 100%; /* Removido para botões não ocuparem sempre 100% */
+    display: inline-block; /* Para que width:auto funcione bem */
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: background-color 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.btn.btn-primary { /* Classe específica para botões primários se necessário */
+    background-color: #6b5b4c; /* Tom mais escuro para primário */
+}
+.btn.btn-primary:hover {
+    background-color: #4a3b32;
+}
+
+
+.btn:hover {
+    background-color: #5a4a3b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.btn:active {
+    transform: translateY(0px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+.btn-outline {
+    background-color: transparent;
+    color: #7a6a56;
+    border: 1px solid #7a6a56;
+    box-shadow: none;
+    text-decoration: none !important; /* Garantir que não haja sublinhado */
+}
+a.btn-outline, a.btn { /* Aplicar a links estilizados como botões também */
+    text-decoration: none !important;
+}
+.btn-outline:hover {
+    background-color: #f0e8d9;
+    color: #4a3b32;
+    border-color: #c0b2a1;
+    transform: translateY(-1px); /* Efeito mais sutil para outline */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+
+.center-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.95em;
+}
+
+.center-text a {
+    color: #8c7b6a;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.center-text a:hover {
+    text-decoration: underline;
+    color: #5a4a3b;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ef9a9a;
+    text-align: center;
+}
+
+.success-message {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #a5d6a7;
+    text-align: center;
+}
+
+.form-nota { /* Para notas abaixo de formulários */
+    text-align: center;
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 20px;
+}
+
+
+/* Efeito de marcador de página (opcional, mais complexo) */
+.bookmark-style {
+    position: absolute;
+    top: 10px;
+    left: -10px;
+    width: 40px;
+    height: 60px;
+    background-color: #c0392b;
+    border-radius: 0 5px 5px 0;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+.bookmark-style::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 20px solid #c0392b;
+    border-right: 20px solid #c0392b;
+    border-bottom: 10px solid transparent;
+}
+
+/* Ajustes para o tema de biblioteca */
+body::before {
+    content: "";
+}
+
+.form-frame {
+    /* background-image: url('textura-de-capa-de-livro.png'); */
+}
+
+/* Pequenos detalhes "literários" */
+.form-frame h2::after, .welcome-frame h1::after {
+    content: "❦";
+    font-size: 0.5em;
+    color: #8c7b6a;
+    margin-left: 10px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+/* Media Queries para responsividade */
+@media (max-width: 768px) { /* Ajustes gerais para telas menores */
+    .navbar {
+        flex-direction: column;
+        padding: 10px 15px;
+        align-items: flex-start;
+    }
+    .navbar-brand {
+        margin-bottom: 10px;
+    }
+    .navbar-links {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .navbar-links a, .dropdown-toggle {
+        padding: 8px 10px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .dropdown-menu {
+        left: 0;
+        transform: translateX(0);
+        min-width: 100%;
+        top: calc(100% + 2px);
+    }
+    .navbar-user {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        width: 100%;
+    }
+    .navbar-user .logout-btn {
+        width: auto;
+        padding: 8px 12px;
+    }
+
+    .main-content-area {
+        padding: 15px;
+    }
+    h1 { font-size: 2.2em; }
+    h2 { font-size: 1.8em; }
+
+
+    .form-frame, .welcome-frame {
+        padding: 20px 25px;
+        border-radius: 10px 30px 10px 30px;
+    }
+
+    .form-frame::before, .welcome-frame::before {
+        right: 20px;
+        border-width: 0 0 25px 25px;
+    }
+    .form-frame::after, .welcome-frame::after {
+        top: 13px;
+        right: 20px;
+        width: 25px;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="password"],
+    .input-group input[type="number"],
+    .btn {
+        padding: 10px 12px;
+        font-size: 0.95em;
+    }
+}
+
+
+@media (max-width: 600px) {
+    .form-frame, .welcome-frame {
+        padding: 20px 25px;
+        border-radius: 10px 30px 10px 30px;
+    }
+
+    .form-frame::before, .welcome-frame::before {
+        right: 20px;
+        border-width: 0 0 25px 25px;
+    }
+    .form-frame::after, .welcome-frame::after {
+        top: 13px;
+        right: 20px;
+        width: 25px;
+    }
+
+    h2 {
+        font-size: 1.8em;
+    }
+    .welcome-frame h1 {
+        font-size: 2em;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="password"],
+    .input-group input[type="number"],
+    .btn {
+        padding: 10px 12px;
+        font-size: 0.95em;
+    }
+}
+
+@media (max-width: 400px) {
+    body {
+        padding: 10px;
+    }
+    .form-frame, .welcome-frame {
+        padding: 15px 20px;
+    }
+    h2 {
+        font-size: 1.6em;
+    }
+    .welcome-frame h1 {
+        font-size: 1.8em;
+    }
+    .form-frame h2::after, .welcome-frame h1::after {
+        font-size: 0.4em;
+        margin-left: 5px;
+    }
+}
+
+/* Melhorias Estéticas Adicionais */
+
+/* Cards de Livros */
+.book-card {
+    background-color: #fdfbf7;
+    border: 1px solid #e0d8c7;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+.book-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+.book-card img {
+    max-width: 150px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 7px rgba(0,0,0,0.12);
+}
+.book-card h4 {
+    font-family: 'Lora', serif;
+    font-size: 1.3em;
+    color: #4a3b32;
+    margin-bottom: 8px;
+    min-height: 2.6em;
+    line-height: 1.3;
+}
+.book-card .autor {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95em;
+    color: #7a6a56;
+    margin-bottom: 6px;
+}
+.book-card .faixa, .book-card .idade {
+    font-size: 0.9em;
+    color: #8c7b6a;
+    margin-bottom: 4px;
+}
+.book-card .resumo {
+    font-family: 'Montserrat', sans-serif;
+    color: #5a4a3b;
+    font-size: 0.95em;
+    margin: 10px 0 15px 0;
+    line-height: 1.55;
+    flex-grow: 1;
+    min-height: 50px;
+}
+
+/* Detalhes do Livro nos Cards (Geral para .book-card) */
+.book-card .detalhe-livro {
+    font-size: 0.85em; /* Um pouco menor para não sobrecarregar */
+    color: #7a6a56;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+.book-card .detalhe-livro strong {
+    color: #5a4a3b; /* Cor mais escura para o rótulo */
+}
+
+.book-card .autor { /* Já estilizado antes, mas pode ser ajustado se necessário */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95em; /* Mantido */
+    color: #7a6a56;
+    margin-bottom: 8px; /* Aumentar um pouco a margem inferior */
+}
+
+/* Resumo no card - para o resumo curto inicial */
+.book-card .resumo-curto {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em;
+    color: #5a4a3b;
+    line-height: 1.5;
+    margin: 10px 0 15px 0;
+    text-align: justify;
+    /* overflow: hidden; /* Será controlado por JS para expansão */
+    /* max-height: 4.5em; /* Limita a 3 linhas aprox, dependendo do line-height */
+}
+
+.book-card h4 a, .book-card .link-ver-resumo, .book-card .link-ocultar-resumo {
+    text-decoration: none;
+    color: #6b5b4c; /* Cor base dos links internos do card */
+    transition: color 0.2s ease;
+}
+.book-card h4 a:hover, .book-card .link-ver-resumo:hover, .book-card .link-ocultar-resumo:hover {
+    color: #778899; /* Azul acinzentado suave para hover - cor vibrante sutil */
+    text-decoration: underline;
+}
+.book-card-link-imagem:hover {
+    opacity: 0.85; /* Efeito suave na imagem ao passar o mouse */
+    transition: opacity 0.2s ease;
+}
+
+/* Estilo específico para autor e resumo nos cards de destaque em main.php */
+/* Estes podem precisar ser revistos se houver conflito ou redundância com os estilos gerais acima */
+.book-card p.autor-destaque {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9em; /* Consistente com .autor */
+    color: #7a6a56;
+    margin-bottom: 5px;
+}
+.book-card p.resumo-destaque { /* Usado em main.php para destaques */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95em;
+    color: #5a4a3b;
+    line-height: 1.5;
+    margin: 5px 0 15px 0;
+    min-height: 60px;
+    text-align: justify;
+    overflow: hidden;
+}
+
+
+/* Botões dentro dos cards */
+.book-card .btn, .book-card .livro-botoes .btn {
+    font-size: 0.9em;
+    padding: 8px 16px;
+    margin-top: auto;
+    width: auto;
+    min-width: 100px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    text-transform: none;
+    letter-spacing: normal;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.book-card .btn:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+.book-card .livro-botoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+
+/* Melhoria para Títulos de Seção (ex: "Conheça a Nossa Biblioteca") */
+.gallery-section h2, .featured-books-section h2, .titulo-encantado, .titulo-staff {
+    font-size: 2.2em;
+    color: #4a3b32;
+    padding-bottom: 12px;
+    margin-bottom: 35px;
+    position: relative;
+    display: inline-block;
+}
+.gallery-section h2::after, .featured-books-section h2::after,
+.titulo-encantado::after, .titulo-staff::after {
+    content: '';
+    position: absolute;
+    left: 0; /* Alinha à esquerda do container do título */
+    bottom: 0;
+    /* transform: translateX(-50%); */ /* Não é mais necessário se width é 100% e left é 0 */
+    width: 100%; /* Faz a linha ocupar toda a largura do título */
+    height: 3px;
+    background-color: #8c7b6a;
+    border-radius: 2px;
+}
+
+.titulo-secao-livros { /* Novo estilo para os subtítulos das seções de livros */
+    font-family: 'Lora', serif;
+    font-size: 1.8em; /* Um pouco menor que o título principal da página */
+    color: #4a3b32;
+    padding-bottom: 10px;
+    margin-top: 30px; /* Espaçamento acima da seção */
+    margin-bottom: 25px;
+    text-align: center;
+    position: relative;
+    display: block; /* Para que o ::after funcione corretamente com text-align: center */
+}
+.titulo-secao-livros::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 60px; /* Linha um pouco menor */
+    height: 2px; /* Linha um pouco mais fina */
+    background-color: #8c7b6a;
+    border-radius: 2px;
+}
+
+
+/* Ajustes de responsividade para cards e títulos de seção */
+@media (max-width: 992px) {
+    .book-card {
+        /* Ajustes se necessário para 2 colunas */
+    }
+}
+@media (max-width: 768px) {
+    .gallery-section h2, .featured-books-section h2, .titulo-encantado, .titulo-staff {
+        font-size: 1.9em;
+    }
+    .book-card {
+        /* Ajustes para 1 coluna */
+        max-width: 350px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Estilos para Filtros em estante_livros.php */
+.filtros-container {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #fdfaf6;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.barra-pesquisa-staff {
+    margin-bottom: 20px;
+}
+
+.filtro-az {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.filtro-az-label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    color: #5a4a3b;
+    margin-right: 10px;
+}
+
+.filtro-az-link {
+    font-family: 'Montserrat', sans-serif;
+    text-decoration: none;
+    color: #7a6a56;
+    background-color: #f0e8d9;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #d2c8b6;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    font-size: 0.9em;
+}
+
+.filtro-az-link:hover {
+    background-color: #e4d9c5;
+    color: #4a3b32;
+    border-color: #c0b2a1;
+}
+
+.filtro-az-link.active {
+    background-color: #4a3b32;
+    color: #f0e8d9;
+    border-color: #4a3b32;
+    font-weight: bold;
+}
+
+[end of Nixo12-feature-historia-page/Nixo-feat-sistema-login-php-biblioteca/trabalho_final/estilo.css]
