@@ -87,12 +87,17 @@ if (isset($_SESSION['erros_editar_livro'])) {
         <a href="main.php" class="navbar-brand">Biblioteca de Coimbra</a>
         <div class="navbar-links">
             <a href="main.php" <?php if (basename($_SERVER['PHP_SELF']) == 'main.php') echo 'class="active"'; ?>>Início</a>
-            <a href="livros_biblioteca.php" <?php
-                $estante_paginas = ['livros_biblioteca.php', 'editar_livro.php', 'editor_paginas_livro.php'];
-                if (in_array(basename($_SERVER['PHP_SELF']), $estante_paginas)) echo 'class="active"';
-            ?>>Estante dos Livros Encantados</a>
-            <a href="criar_livro.php" <?php if (basename($_SERVER['PHP_SELF']) == 'criar_livro.php') echo 'class="active"'; ?>>Criar Novo Livro</a>
+            <a href="livros_biblioteca.php?admin_view=true" <?php
+                $pagina_atual = basename($_SERVER['PHP_SELF']);
+                // Marcar 'Estante (Admin)' como ativo se estiver em livros_biblioteca.php ou editar_livro.php (ou outras páginas de admin relacionadas à estante)
+                $paginas_estante_admin = ['livros_biblioteca.php', 'editar_livro.php'];
+                if (in_array($pagina_atual, $paginas_estante_admin) || ($pagina_atual == 'editor_paginas_livro.php' && isset($_GET['id']))) { // editor_paginas_livro será removido
+                    echo 'class="active"';
+                }
+            ?>>Estante (Admin)</a>
+            <a href="admin_adicionar_livro.php" <?php if (basename($_SERVER['PHP_SELF']) == 'admin_adicionar_livro.php') echo 'class="active"'; ?>>Adicionar Livro</a>
             <a href="historia.php" <?php if (basename($_SERVER['PHP_SELF']) == 'historia.php') echo 'class="active"'; ?>>História</a>
+            <!-- Nota: O link para editor_paginas_livro.php será removido quando o arquivo for deletado -->
         </div>
         <div class="navbar-user">
             <span>Olá, <?php echo $primeiro_nome; ?>!</span>

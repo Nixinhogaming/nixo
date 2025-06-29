@@ -297,8 +297,8 @@ $livros_destaque = getLivrosDestaque($mysqli);
         <div class="navbar-links">
             <a href="main.php" <?php if (basename($_SERVER['PHP_SELF']) == 'main.php') echo 'class="active"'; ?>>Início</a>
             <?php if ($is_admin): ?>
-                <a href="livros_biblioteca.php" <?php if (basename($_SERVER['PHP_SELF']) == 'livros_biblioteca.php') echo 'class="active"'; ?>>Estante dos Livros Encantados</a>
-                <a href="criar_livro.php" <?php if (basename($_SERVER['PHP_SELF']) == 'criar_livro.php') echo 'class="active"'; ?>>Criar Novo Livro</a>
+                <a href="livros_biblioteca.php?admin_view=true" <?php if (basename($_SERVER['PHP_SELF']) == 'livros_biblioteca.php') echo 'class="active"'; ?>>Estante (Admin)</a>
+                <a href="admin_adicionar_livro.php" <?php if (basename($_SERVER['PHP_SELF']) == 'admin_adicionar_livro.php') echo 'class="active"'; ?>>Adicionar Livro</a>
             <?php endif; ?>
             <a href="historia.php" <?php if (basename($_SERVER['PHP_SELF']) == 'historia.php') echo 'class="active"'; ?>>História</a>
             <?php if (!$is_admin): ?>
