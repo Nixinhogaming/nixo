@@ -1,15 +1,24 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+// 1. Incluir configurações e iniciar sessão (se não iniciado)
+require_once "config_db.php"; // config_db.php já tem session_start() seguro
 
-// Verificar se o usuário está logado, caso contrário redirecionar para a página de login
+// 2. Verificar se o usuário está logado
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
-    header("location: login.php");
+    header("location: login.php?erro=" . urlencode("Acesso negado. Por favor, faça login.")); // Adicionar mensagem de erro
     exit;
 }
 
-// Recuperar informações do usuário da sessão para exibição
+// 3. Recuperar informações do usuário da sessão
+// Verificar se o ID existe antes de usá-lo para evitar erros se não estiver definido
+if (!isset($_SESSION["id"])) {
+    // Isso indicaria um problema sério no processo de login ou na gestão da sessão
+    error_log("Erro crítico em main.php: Usuário logado mas ID da sessão não encontrado. Sessão: " . print_r($_SESSION, true));
+    // Destruir a sessão potencialmente corrompida e redirecionar para login
+    session_unset();
+    session_destroy();
+    header("location: login.php?erro=" . urlencode("Erro de sessão (ID não encontrado). Por favor, faça login novamente."));
+    exit;
+}
 $user_id = $_SESSION["id"];
 $primeiro_nome = isset($_SESSION["primeiro_nome"]) ? htmlspecialchars($_SESSION["primeiro_nome"]) : "Utilizador";
 $email_usuario = isset($_SESSION["email"]) ? htmlspecialchars($_SESSION["email"]) : "Email não disponível";
@@ -18,8 +27,6 @@ $is_admin = isset($_SESSION["is_admin"]) ? (bool)$_SESSION["is_admin"] : false;
 
 // Mensagem de boas-vindas padrão
 $mensagem_boas_vindas_main = "Bem-vindo(a) à Biblioteca de Coimbra, <strong>" . $primeiro_nome . "</strong>!";
-
-require_once "config_db.php";
 
 // Função para obter livros em destaque
 function getLivrosDestaque($mysqli) {

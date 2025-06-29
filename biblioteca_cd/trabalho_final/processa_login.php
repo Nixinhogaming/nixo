@@ -86,12 +86,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Se houver erros, redirecionar de volta para o formulário de login com os erros
     if (!empty($erros)) {
-        $erros_str = implode("<br>", $erros);
-        // Adicionar os erros na sessão para exibi-los de forma mais segura e persistente
-        // ou passar via GET como antes, mas pode ser mais limitado.
-        // Por consistência com registo, vamos usar GET por enquanto.
-        // Seria melhor usar $_SESSION['login_error'] = $erros_str; e limpar depois de exibir.
-        header("location: login.php?erro=" . urlencode($erros_str));
+        // Iniciar sessão se ainda não estiver ativa (garantia, embora config_db.php deva fazer)
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['login_error'] = implode("<br>", $erros);
+        header("location: login.php");
         exit();
     }
 

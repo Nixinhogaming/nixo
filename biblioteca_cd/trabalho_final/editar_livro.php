@@ -1,12 +1,16 @@
 <?php
-session_start();
-require_once "config_db.php";
+require_once "config_db.php"; // Primeira linha, já lida com session_start()
 
-// Apenas admins podem acessar
+// Apenas admins podem acessar e precisam estar logados
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || !isset($_SESSION["is_admin"]) || !$_SESSION["is_admin"]) {
+    $_SESSION['login_error'] = "Acesso negado. Faça login como administrador.";
     header("location: login.php");
     exit;
 }
+
+// Se chegou aqui, é admin e está logado.
+// Não há necessidade de verificar $_SESSION["id"] aqui, pois esta página apenas exibe o formulário.
+// A verificação crítica do ID do editor será feita em processa_editar_livro.php.
 
 $livro_id = null;
 $livro = null;

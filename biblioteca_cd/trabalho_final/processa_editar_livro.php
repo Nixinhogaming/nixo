@@ -1,28 +1,55 @@
 <?php
-session_start();
-require_once "config_db.php";
+require_once "config_db.php"; // Primeira linha, já lida com session_start()
 
-// Apenas admins podem acessar
+// Apenas admins podem acessar e precisam estar logados
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || !isset($_SESSION["is_admin"]) || !$_SESSION["is_admin"]) {
+    $_SESSION['login_error'] = "Acesso negado. Faça login como administrador.";
     header("location: login.php");
     exit;
 }
 
-$livro_id = null;
+// Verificar se o ID do admin (editor) está na sessão
+if (!isset($_SESSION["id"]) || empty($_SESSION["id"])) {
+    error_log("Erro crítico em processa_editar_livro.php: Admin logado (" . ($_SESSION['primeiro_nome'] ?? 'Nome não encontrado') . ") sem ID na sessão. Sessão: " . print_r($_SESSION, true));
+
+    $redirect_url = "login.php";
+    $error_message = "Erro crítico de sessão. Faça login novamente.";
+
+    if (isset($_POST['livro_id']) && is_numeric($_POST['livro_id'])) {
+        $_SESSION['erros_editar_livro'] = ["Erro crítico de sessão: ID do administrador não encontrado. Por favor, faça login novamente."];
+        $redirect_url = "editar_livro.php?id=" . intval($_POST['livro_id']);
+    } else {
+        $_SESSION['login_error'] = $error_message;
+    }
+
+    // Limpar sessão potencialmente corrompida
+    if (session_status() == PHP_SESSION_ACTIVE) {
+        session_unset();
+        session_destroy();
+    }
+    header("location: " . $redirect_url);
+    exit;
+}
+$editado_por_id_sessao = $_SESSION["id"]; // ID do admin que está editando
+
+$livro_id = null; // Será definido a partir do POST
 $titulo = "";
 $autor = "";
-$idade_livro = 0;
+// $idade_livro = 0; // Removido, será $idade_livro_para_db
 $faixa_etaria = "";
 $resumo = "";
 $erros = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_livro_submit'])) {
     if (empty($_POST['livro_id']) || !is_numeric($_POST['livro_id'])) {
+        // Este erro deve idealmente ser tratado de forma mais robusta,
+        // talvez redirecionando para uma página de erro ou a estante com uma mensagem genérica,
+        // pois sem ID do livro, não podemos nem voltar ao formulário de edição específico.
         $_SESSION['mensagem_erro_estante'] = "ID do livro inválido para edição.";
-        header("location: estante_livros.php");
+        header("location: livros_biblioteca.php?admin_view=true"); // Redireciona para a estante
         exit;
     }
-    $livro_id = intval($_POST['livro_id']);
+    $livro_id = intval($_POST['livro_id']); // Agora $livro_id está definido para o resto do script
 
     // Validação dos campos (similar a processa_criar_livro.php)
     if (empty(trim($_POST["titulo"]))) {
@@ -146,31 +173,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_livro_submit'])
     }
 
 
-    if (empty($erros)) {
-        if (!isset($_SESSION["id"]) || empty($_SESSION["id"])) {
-            $erros[] = "Erro de sessão: ID do editor não encontrado. Faça login novamente.";
-        } else {
-            $editado_por_id_sessao = $_SESSION["id"]; // ID do admin que está editando
-
-            // Verificar se o editado_por_id_sessao existe na tabela usuarios
-            $stmt_check_user = $mysqli->prepare("SELECT id FROM usuarios WHERE id = ?");
-            if ($stmt_check_user) {
-                $stmt_check_user->bind_param("i", $editado_por_id_sessao);
-                $stmt_check_user->execute();
-                $result_check_user = $stmt_check_user->get_result();
-                if ($result_check_user->num_rows == 0) {
-                    $erros[] = "Erro crítico: O ID do editor não é válido.";
-                }
-                $stmt_check_user->close();
-            } else {
-                $erros[] = "Erro ao verificar ID do editor.";
-            }
-        }
-
+    // A verificação de $_SESSION["id"] já foi feita no topo.
+    // A variável $editado_por_id_sessao já está definida.
+    // Apenas precisamos garantir que não há outros erros de formulário ANTES de tentar o UPDATE.
+    if (empty($erros)) { // Verifica APENAS erros de validação do formulário aqui
         // A coluna editado_em será atualizada para NOW() diretamente na query.
         // A coluna criado_por_id não é alterada aqui, apenas editado_por_id.
 
-        // Prosseguir com o UPDATE apenas se não houver erros de validação do ID do editor
+        // Verificar se o ID do editor (da sessão) corresponde a um admin válido no BD.
+        $stmt_check_user = $mysqli->prepare("SELECT id FROM usuarios WHERE id = ? AND is_admin = 1");
+        if ($stmt_check_user) {
+            $stmt_check_user->bind_param("i", $editado_por_id_sessao);
+            $stmt_check_user->execute();
+            $result_check_user = $stmt_check_user->get_result();
+            if ($result_check_user->num_rows == 0) {
+                // ID da sessão não corresponde a um admin válido no BD. Isso é crítico.
+                $erros[] = "Erro de integridade: ID do administrador da sessão não é válido ou não é administrador.";
+                error_log("Falha de integridade em processa_editar_livro.php: ID de sessão admin " . $editado_por_id_sessao . " não encontrado como admin no BD.");
+            }
+            $stmt_check_user->close();
+        } else {
+            $erros[] = "Erro ao verificar ID do editor (preparação): " . $mysqli->error;
+        }
+
+        // Prosseguir com o UPDATE apenas se não houver erros de validação do ID do editor no BD
         if (empty($erros)) {
             $sql_update = "UPDATE livros SET
                             titulo = ?,

@@ -30,18 +30,24 @@
                 unset($_SESSION['registro_concluido']); // Limpar a flag da sessão
             }
 
+            // Exibir mensagem de erro da sessão de login
+            if (isset($_SESSION['login_error'])) {
+                echo '<div class="error-message">' . $_SESSION['login_error'] . '</div>'; // Erros já vêm formatados com <br> e não precisam de htmlspecialchars aqui
+                unset($_SESSION['login_error']); // Limpar após exibir
+            }
+
+            // Manter a exibição de erros via GET por retrocompatibilidade ou outros usos, mas idealmente seria removido.
+            if (isset($_GET['erro']) && !isset($_SESSION['login_error'])) { // Só exibir se não houver erro de sessão
+                echo '<div class="error-message">' . htmlspecialchars($_GET['erro']) . '</div>';
+            }
+
             // Exibir mensagem de sucesso após redefinição de senha - REMOVIDO pois a funcionalidade foi removida
             // if (isset($_SESSION['login_mensagem_sucesso'])) {
             //     echo '<div class="success-message">' . htmlspecialchars($_SESSION['login_mensagem_sucesso']) . '</div>';
             //     unset($_SESSION['login_mensagem_sucesso']); // Limpar após exibir
             // }
 
-            // Verificar se existem mensagens de erro ou sucesso na URL (do registo ou login anterior)
-            if (isset($_GET['erro'])) {
-                // Filtrar mensagens de erro que não são mais relevantes (ex: email não verificado)
-                // Por agora, vamos exibir todas, mas idealmente seriam mais genéricas vindas do processa_login
-                echo '<div class="error-message">' . htmlspecialchars($_GET['erro']) . '</div>';
-            }
+            // Verificar se existem mensagens de sucesso na URL (do registo)
             if (isset($_GET['sucesso'])) { // Mensagem de sucesso vinda do registo
                 echo '<div class="success-message">' . htmlspecialchars($_GET['sucesso']) . '</div>';
             }

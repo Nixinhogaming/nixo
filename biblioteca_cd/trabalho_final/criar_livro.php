@@ -1,7 +1,10 @@
 <?php
-session_start();
-if (!isset($_SESSION["is_admin"]) || !$_SESSION["is_admin"]) {
-    header("location: main.php");
+require_once "config_db.php"; // Inclui conexão BD e session_start() seguro
+
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || !isset($_SESSION["is_admin"]) || !$_SESSION["is_admin"]) {
+    // Se não for admin ou não estiver logado, redirecionar
+    $_SESSION['login_error'] = "Acesso restrito a administradores.";
+    header("location: login.php"); // Ou main.php se preferir não expor a necessidade de admin
     exit;
 }
 ?>

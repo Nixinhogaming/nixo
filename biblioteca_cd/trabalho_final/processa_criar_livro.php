@@ -1,12 +1,28 @@
 <?php
-session_start();
-require_once "config_db.php"; // Garante que a conexão com o BD está disponível
+require_once "config_db.php"; // Inclui conexão BD e session_start() seguro
 
-// Apenas admins podem acessar esta página
+// Apenas admins podem acessar esta página e precisam estar logados
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || !isset($_SESSION["is_admin"]) || !$_SESSION["is_admin"]) {
-    header("location: login.php"); // Redireciona para login se não for admin ou não logado
+    $_SESSION['login_error'] = "Acesso negado. Faça login como administrador."; // Mensagem de erro mais clara
+    header("location: login.php");
     exit;
 }
+
+// Verificar se o ID do admin está na sessão (ESSENCIAL se for usar o ID para 'criado_por_id')
+if (!isset($_SESSION["id"]) || empty($_SESSION["id"])) {
+    // Se este bloco for ativado, significa que o admin está logado, é admin, mas não tem ID na sessão.
+    // Isso é um estado inconsistente e grave.
+    error_log("Erro crítico em processa_criar_livro.php: Admin logado (" . ($_SESSION['primeiro_nome'] ?? 'Nome não encontrado') . ") sem ID na sessão. Sessão: " . print_r($_SESSION, true));
+    $_SESSION['erros_criar_livro'] = ["Erro crítico de sessão: ID do administrador não encontrado. Por favor, faça login novamente."];
+    // Limpar sessão potencialmente corrompida
+    if (session_status() == PHP_SESSION_ACTIVE) { // Verificar se a sessão está ativa antes de tentar destruí-la
+        session_unset();
+        session_destroy();
+    }
+    header("location: login.php?erro=" . urlencode("Erro crítico de sessão. Faça login novamente.")); // Forçar novo login
+    exit;
+}
+$criado_por_id_sessao = $_SESSION["id"]; // ID do admin que está a criar
 
 $titulo = "";
 $autor = "";
@@ -151,16 +167,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['criar_livro_submit']))
         //     }
         // }
 
-        // Temporariamente, definir criado_por_id como NULL
-        $criado_por_id_para_db = null;
+        // Usar o ID do admin da sessão
+        $criado_por_id_para_db = $criado_por_id_sessao; // Removida a definição temporária para NULL
 
         // Prosseguir com a inserção apenas se não houver erros de validação anteriores (ex: campos obrigatórios)
-        if (empty($erros)) {
+        // E verificar novamente se $criado_por_id_para_db é válido (embora a verificação no topo já deva garantir isso)
+        if (empty($erros) && !empty($criado_por_id_para_db)) {
             $tipo_criacao = 'upload'; // Definir o tipo de criação para este fluxo
             $sql = "INSERT INTO livros (titulo, autor, idade_livro, faixa_etaria, imagem, resumo, ficheiro, criado_por_id, tipo_criacao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $mysqli->prepare($sql);
 
             if ($stmt) {
+                // Certifique-se de que $criado_por_id_para_db está incluído na bind_param
                 $stmt->bind_param("ssissssis", $titulo, $autor, $idade_livro, $faixa_etaria, $img_path, $resumo, $ficheiro_path, $criado_por_id_para_db, $tipo_criacao);
                 if ($stmt->execute()) {
                     // Mensagem para ser exibida em livros_biblioteca.php ou na estante
